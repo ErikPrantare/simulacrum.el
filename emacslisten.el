@@ -49,7 +49,7 @@ After FORM has been evaluated, `emacslisten-last-form' is set to
   (eval form)
   (setq emacslisten-last-form emacslisten-this-form))
 
-(defmacro emacslisten-evaluate (form)
+(defun emacslisten-evaluate (form)
   "Evaluate FORM as a voice driven command.
 
 This adds a new event to `unread-command-events' of the form
@@ -57,10 +57,9 @@ This adds a new event to `unread-command-events' of the form
 \"<emacslisten--remote-form>\", custom form handlers can be added for
 voice commands.  These handlers should inspect `this-command-keys' to
 get FORM."
-  `(let ((form ',form))
-     (setq unread-command-events
-           (append unread-command-events
-                   (list (cons 'emacslisten--remote-form form))))))
+  (setq unread-command-events
+        (append unread-command-events
+                (list (cons 'emacslisten--remote-form form)))))
 
 (defun emacslisten--handle-remote-form ()
   "Default form handler.
