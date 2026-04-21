@@ -49,10 +49,6 @@ After FORM has been evaluated, `simulacrum-last-form' is set to
   (eval form)
   (setq simulacrum-last-form simulacrum-this-form))
 
-(defun simulacrum-evaluate (form)
-  "Evaluate FORM as a voice driven command."
-  (simulacrum-generate-event form))
-
 (defun simulacrum-generate-event (form)
   "Generate synthetic input event for evaluating FORM.
 
@@ -76,9 +72,9 @@ type needs to inspect `this-command-keys' to get FORM."
 (defun simulacrum-evaluate-immediately (form)
   "Evaluate FORM immediately.
 
-In contrast to `simulacrum-generate-event', FORM is not evaluated as if
-it was invoked interactively.  This means that this function blocks and
-can cause other things like undo-history and keyboard macros to behave
+In contrast to `simulacrum-generate-event', FORM is not injected into
+the event stream.  This means that this function blocks and can cause
+other things like undo-history and keyboard macros to behave
 unexpectedly."
   ;; For some reason, selected window can differ from
   ;; (selected-window) when evaluated by Emacs.
@@ -89,7 +85,7 @@ unexpectedly."
 (defun simulacrum--handle-remote-form ()
   "Default form handler.
 
-See `simulacrum-evaluate' for more information concerning form
+See `simulacrum-generate-event' for more information concerning form
 handlers."
   (interactive)
   (let ((form (cdr (elt (this-command-keys) 0))))

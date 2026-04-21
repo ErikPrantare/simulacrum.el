@@ -9,6 +9,6 @@ Inject arbitrary forms into the event stream.
               :rev :newest))
 #+end_src
 
-Forms are injected by calling ~simulacrum-evaluate~ with the lisp form
-that should be injected into the event stream.  The form will be
-evaluated as part of the usual command loop.
+Forms are injected by calling ~simulacrum-generate-event~ with the
+lisp form that should be injected into the event stream.  The form
+will be evaluated as part of the usual command loop.
