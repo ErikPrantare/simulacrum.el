@@ -1,4 +1,4 @@
-;;; simulacrum.el --- Inject arbitrary forms into the event stream  -*- lexical-binding: t; -*-
+;;; simulacrum.el --- Inject custom event types into the event stream  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025, 2026  Erik Präntare
 
@@ -57,7 +57,7 @@ After FORM has been evaluated, `simulacrum-last-form' is set to
   "Define new input event TYPE."
   `(setf (map-elt simulacrum--event-types ',type) t))
 
-(defun simulacrum-generate-event (type &optional data)
+(defun simulacrum-generate-event (type &rest data)
   "Generate synthetic input event TYPE with optional DATA.
 
 This event can be handled by the usual methods of setting key bindings.
@@ -89,9 +89,15 @@ following benefits over evaluating the function directly:
            type))
   (setq unread-command-events
         (append unread-command-events
-                (list (if data
-                          (list type data)
-                        (list type))))))
+                (list (cons type data)))))
+
+(defun simulacrum-command (function)
+  ;; TODO: Store this in a hash for when we eventually want to hack
+  ;; describe-key.  Remember to make the hash not hold the key from
+  ;; the garbage collector.
+  (lambda (&rest args)
+    (interactive (cdr last-command-event))
+    (apply function args)))
 
 ;;; TODO
 ;; - Patch describe-key to handle user-defined event types.

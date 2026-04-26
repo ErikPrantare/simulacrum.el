@@ -31,9 +31,9 @@
         (result nil))
     (simulacrum-define-event-type test-event)
     (keymap-set overriding-local-map "<test-event>"
-                (lambda ()
-                  (interactive)
-                  (setq result 'triggered)))
+                (simulacrum-command
+                 (lambda ()
+                   (setq result 'triggered))))
     (simulacrum-generate-event 'test-event)
     (execute-kbd-macro (seq-into unread-command-events 'vector))
     (should (eq result 'triggered))))
@@ -45,12 +45,26 @@
         (result nil))
     (simulacrum-define-event-type test-event)
     (keymap-set overriding-local-map "<test-event>"
-                (lambda (data)
-                  (interactive (list (cadr last-input-event)))
-                  (setq result data)))
+                (simulacrum-command
+                 (lambda (data)
+                   (setq result data))))
     (simulacrum-generate-event 'test-event 42)
     (execute-kbd-macro (seq-into unread-command-events 'vector))
     (should (equal result 42))))
+
+(ert-deftest simulacrum-command-passes-multiple-arguments ()
+  (let ((simulacrum--event-types (make-hash-table))
+        (unread-command-events nil)
+        (overriding-local-map (make-sparse-keymap))
+        (result nil))
+    (simulacrum-define-event-type test-event)
+    (keymap-set overriding-local-map "<test-event>"
+                (simulacrum-command
+                 (lambda (a b c)
+                   (setq result (list a b c)))))
+    (simulacrum-generate-event 'test-event 1 2 3)
+    (execute-kbd-macro (seq-into unread-command-events 'vector))
+    (should (equal result '(1 2 3)))))
 
 (ert-deftest simulacrum-generating-undefined-event-signals-error ()
   (let ((simulacrum--event-types (make-hash-table))
