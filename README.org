@@ -1,5 +1,11 @@
 #+title: simulacrum.el
-Inject arbitrary forms into the event stream.
+Define custom input event types for the Emacs command loop.
+
+Emacs input events are limited to keys, mouse actions, and a few
+special types.  Simulacrum extends this by letting you define custom
+event types that carry arbitrary data.  This is useful when an
+external process (e.g., a voice control engine) needs to invoke
+commands with structured arguments through the command loop.
 
 * Installation
 #+begin_src elisp
@@ -9,6 +15,19 @@ Inject arbitrary forms into the event stream.
               :rev :newest))
 #+end_src
 
-Forms are injected by calling ~simulacrum-generate-event~ with the
-lisp form that should be injected into the event stream.  The form
-will be evaluated as part of the usual command loop.
+* Usage
+Define an event type, bind it to a command, then generate events:
+
+#+begin_src elisp
+  (simulacrum-define-event-type my-event)
+
+  (keymap-global-set "<my-event>"
+                     (simulacrum-command
+                      (lambda (n) (message "Got %s" n))))
+
+  ;; Later, e.g. from an external process:
+  (simulacrum-generate-event 'my-event 42)
+#+end_src
+
+When the command loop handles the generated event, it will execute the
+command and print "Got 42".
