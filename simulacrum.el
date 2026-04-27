@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2025, 2026  Erik Präntare
 
-;; Author: Erik Präntare <erik@adjoint-modality2>
+;; Author: Erik Präntare
 ;; Version: 0.1.0
 ;; Homepage: https://github.com/ErikPrantare/simulacrum.el
 ;; Keywords: convenience
