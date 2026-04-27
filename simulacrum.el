@@ -28,30 +28,6 @@
 
 (require 'repeat)
 
-(defvar simulacrum-this-form nil
-  "The form currently evaluated by simulacrum.
-
-This variable may be changed by the evaluated form.  Whatever gets
-put in this variable will be in `simulacrum-last-form' during the
-form next evaluated.")
-
-(defvar simulacrum-last-form nil
-  "The form last evaluated by simulacrum.
-
-This will be whatever `simulacrum-this-form' was at the end of the
-previously evaluated form.")
-
-(defun simulacrum--evaluate-form (form)
-  "Evaluate FORM.
-
-Before FORM is evaluated, `simulacrum-this-form' is set to FORM.
-After FORM has been evaluated, `simulacrum-last-form' is set to
-`simulacrum-this-form'."
-  (interactive (list (cadr last-input-event)))
-  (setq simulacrum-this-form form)
-  (eval form)
-  (setq simulacrum-last-form simulacrum-this-form))
-
 (defvar simulacrum--event-types (make-hash-table)
   "Defined event types.")
 
