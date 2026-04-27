@@ -78,14 +78,7 @@ will output the message \"Number emitted: 54\".
 
 As with all other keybindings, the command is executed at the point that
 event is handled by the command loop.  This means that it is not
-executed immediately.
-
-Evaluating functions this way for synthetic events provides the
-following benefits over evaluating the function directly:
-
-- Guaranteed execution ordering without blocking.
-- Compatibility with keyboard macros.
-- More predictable interaction with undo-boundaries."
+executed immediately."
   (unless (map-elt simulacrum--event-types type)
     (error "Event type `%S' not defined"
            type))
