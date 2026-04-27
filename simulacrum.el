@@ -38,23 +38,24 @@
 (defun simulacrum-generate-event (type &rest data)
   "Generate synthetic input event TYPE with optional DATA.
 
-This event can be handled by the usual methods of setting key bindings.
-For example, with
+TYPE is an event type defined with `simulacrum-define-event-type'.  The
+event is handled by the usual keybinding mechanism.  For example:
+
+  (simulacrum-define-event-type my-event-type)
 
   (keymap-global-set \"<my-event-type>\"
-                     (lambda (number)
-                       (interactive (list (cadr last-input-event)))
-                       (message \"Number emitted: %s\" number)))
+                     (simulacrum-command
+                      (lambda (number)
+                        (message \"Number emitted: %s\" number))))
 
-evaluating
+Then evaluating
 
-  (simulacrum-generate-event 'my-event-type 54)
+  (simulacrum-generate-event \\='my-event-type 54)
 
 will output the message \"Number emitted: 54\".
 
-As with all other keybindings, the command is executed at the point that
-event is handled by the command loop.  This means that it is not
-executed immediately."
+The command is executed when the event is handled by the command
+loop, not immediately."
   (unless (map-elt simulacrum--event-types type)
     (error "Event type `%S' not defined"
            type))
@@ -65,6 +66,8 @@ executed immediately."
 (defvar simulacrum--last-event nil)
 
 (defun simulacrum--execute-command (function)
+  "Call FUNCTION with the data arguments of the current event.
+On `repeat', reuse the previous event's arguments."
   (let ((arguments (cdr (if (repeat-is-really-this-command)
                           simulacrum--last-event
                         last-command-event))))
@@ -74,6 +77,11 @@ executed immediately."
       (setq simulacrum--last-event last-command-event))))
 
 (defun simulacrum-command (function)
+  "Create a command from FUNCTION.
+
+FUNCTION should take the same amount of arguments that is passed to
+`simulacrum-generate-event'.  The created command can then be bound in a
+keymap."
   ;; TODO: Store this in a hash for when we eventually want to hack
   ;; describe-key.  Remember to make the hash not hold the key from
   ;; the garbage collector.
