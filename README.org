@@ -33,3 +33,10 @@ When the command loop handles the generated event, it will execute the
 command and print "Got 42".
 
 For an example of usage from another package, see [[https://github.com/ErikPrantare/phony.el][phony.el]].
+
+* Versioning system
+:PROPERTIES:
+:CUSTOM_ID: versioning-system
+:END:
+This project uses [[https://semver.org/][semantic versioning]].  While still on 0.y.z, an
+increment of y signals breaking changes.
