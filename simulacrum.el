@@ -5,6 +5,7 @@
 ;; Author: Erik Präntare
 ;; Version: 0.1.0
 ;; Homepage: https://github.com/ErikPrantare/simulacrum.el
+;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience
 ;; Created: 19 Aug 2025
 
@@ -45,6 +46,7 @@
 
 ;;; Code:
 
+(require 'map)
 (require 'repeat)
 
 (defvar simulacrum--event-types (make-hash-table)
