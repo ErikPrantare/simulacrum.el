@@ -103,20 +103,29 @@ On `repeat', reuse the previous event's arguments."
       (setq last-repeatable-command this-command)
       (setq simulacrum--last-event last-command-event))))
 
+(defvar simulacrum--command-underlying-function
+  (make-hash-table :weakness 'key)
+  "Hash-table mapping live simulacrum commands to the corresponding function.")
+
 (defun simulacrum-command (function)
   "Create a command from FUNCTION.
 
 FUNCTION should take the same amount of arguments that is passed to
 `simulacrum-generate-event'.  The created command can then be bound in a
 keymap."
-  ;; TODO: Store this in a hash for when we eventually want to hack
-  ;; describe-key.  Remember to make the hash not hold the key from
-  ;; the garbage collector.  We are going to want to add-advice
-  ;; :filter-return to help--analyze-key to modify the returned value
-  ;; whenever the computed definition is part of our hash.
-  (lambda ()
-    (interactive)
-    (simulacrum--execute-command function)))
+  (let ((command (lambda ()
+                   (interactive)
+                   (simulacrum--execute-command function))))
+    (setf (map-elt simulacrum--command-underlying-function command) function)
+    command))
+
+(define-advice help--analyze-key (:around (f key untranslated &optional buffer) simulacrum--analyze-key)
+  "Translate the definition returned to the one passed to `simulacrum-command'."
+  (pcase-let* ((`(,brief-desc ,defn ,event ,mouse-msg) (funcall f key untranslated buffer)))
+    (when-let* ((function (map-elt simulacrum--command-underlying-function defn)))
+      (setq defn function)
+      (setq brief-desc (format "%s runs the command %s" (help-key-description key untranslated) defn)))
+    (list brief-desc defn event mouse-msg)))
 
 (provide 'simulacrum)
 ;;; simulacrum.el ends here

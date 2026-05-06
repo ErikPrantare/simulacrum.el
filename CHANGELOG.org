@@ -1,3 +1,6 @@
+* NEXT
+- Make ~describe-key~ describe the function passed to ~simulacrum-command~.
+
 * 1.0.0 [2026-05-04 Mon]
 - Fix ~describe-key~ error on custom events.
 
