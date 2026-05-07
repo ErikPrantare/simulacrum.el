@@ -98,6 +98,9 @@ On `repeat', reuse the previous event's arguments."
   (let ((arguments (nthcdr 3 (if (repeat-is-really-this-command)
                                  simulacrum--last-event
                                last-command-event))))
+    (unless (or (repeat-is-really-this-command)
+                (eq last-event-frame 'macro))
+      (setq last-event-device "simulacrum"))
     (apply function arguments)
     (unless (repeat-is-really-this-command)
       (setq last-repeatable-command this-command)
@@ -138,6 +141,9 @@ If it is not a simulacrum command, return nil."
     (cons format (seq-map (lambda (argument)
                             (or (simulacrum--resolve-command argument) argument))
                           arguments))))
+
+(define-advice device-class (:before-until (_frame name) simulacrum--resolve-device-class)
+  (and (string-equal name "simulacrum") 'simulacrum))
 
 (provide 'simulacrum)
 ;;; simulacrum.el ends here
