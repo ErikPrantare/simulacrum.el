@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2025, 2026  Erik Präntare
 
-;; Author: Erik Präntare
+;; Author: Erik Präntare <erik@prantare.xyz>
 ;; Version: 1.1.0
 ;; Homepage: https://github.com/ErikPrantare/simulacrum.el
 ;; Package-Requires: ((emacs "29.1"))
