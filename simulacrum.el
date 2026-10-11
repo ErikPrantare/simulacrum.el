@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2025, 2026  Erik Präntare
 
-;; Author: Erik Präntare
-;; Version: 1.1.0
+;; Author: Erik Präntare <erik@prantare.xyz>
+;; Version: 2.0.0
 ;; Homepage: https://github.com/ErikPrantare/simulacrum.el
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience
@@ -35,9 +35,10 @@
 ;;
 ;;   (simulacrum-define-event-type my-event)
 ;;
-;;   (keymap-global-set "<my-event>"
-;;                      (simulacrum-command
-;;                       (lambda (n) (message "Got %s" n))))
+;;   (simulacrum-define-command display-number (n)
+;;     (message "Got %s" n))
+;;
+;;   (keymap-global-set "<my-event>" #'display-number)
 ;;
 ;;   (simulacrum-generate-event 'my-event 42)
 ;;
@@ -64,10 +65,10 @@ event is handled by the usual keybinding mechanism.  For example:
 
   (simulacrum-define-event-type my-event-type)
 
-  (keymap-global-set \"<my-event-type>\"
-                     (simulacrum-command
-                      (lambda (number)
-                        (message \"Number emitted: %s\" number))))
+  (simulacrum-define-command emit-number (number)
+    (message \"Number emitted: %s\" number))
+
+  (keymap-global-set \"<my-event-type>\" #\\='emit-number)
 
 Then evaluating
 
@@ -129,6 +130,8 @@ On `repeat', reuse the previous event's arguments."
 (defun simulacrum-command (function)
   "Create a command from FUNCTION.
 
+This function is deprecated.  Use `simulacrum-define-command' instead.
+
 FUNCTION should take the same amount of arguments that is passed to
 `simulacrum-generate-event'.  The created command can then be bound in a
 keymap."
@@ -137,6 +140,15 @@ keymap."
                    (simulacrum--execute-command function))))
     (setf (map-elt simulacrum--command-underlying-function command) function)
     command))
+
+(defmacro simulacrum-define-command (name args &rest body)
+  "Define a command NAME invoked by simulacrum events.
+
+NAME, ARGS and BODY are as for `defun'.  ARGS should accept as many
+arguments as will be passed through `simulacrum-generate-event'."
+  (declare (indent defun)
+           (doc-string 3))
+  `(defalias ',name (simulacrum-command (lambda ,args ,@body))))
 
 (defun simulacrum--resolve-command (maybe-command)
   "Return the underlying function of MAYBE-COMMAND a simulacrum command.
