@@ -45,6 +45,17 @@
      (execute-kbd-macro (seq-into unread-command-events 'vector))
      (should (eq result 'triggered)))))
 
+(ert-deftest simulacrum-generated-event-triggers-command-2 ()
+  (simulacrum-test
+   (let ((result nil))
+     (simulacrum-define-event-type test-event)
+     (simulacrum-define-command test-command ()
+       (setq result 'triggered))
+     (keymap-set overriding-local-map "<test-event>" 'test-command)
+     (simulacrum-generate-event 'test-event)
+     (execute-kbd-macro (seq-into unread-command-events 'vector))
+     (should (eq result 'triggered)))))
+
 (ert-deftest simulacrum-generated-event-carries-data-payload ()
   (simulacrum-test
    (let ((result nil))
