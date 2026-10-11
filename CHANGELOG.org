@@ -1,4 +1,4 @@
-* NEXT
+* 2.0.0 [2026-10-12 Mon]
 - Added ~simulacrum-define-command~ macro for defining commands.  This
   macro should be used instead of ~simulacrum-command~, which is now
   deprecated.
